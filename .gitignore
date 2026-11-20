@@ -1,0 +1,24 @@
+# Environment
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+
+# Build
+build/
+dist/
