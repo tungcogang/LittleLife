@@ -1,35 +1,35 @@
 """
-Standalone Pygame Asset Preview Tool for LittleLife.
-Inspects, previews, and validates all game assets in assets_pack/.
-Features checkerboard transparency display, zoom scaling, arrow navigation,
-and a dedicated 5-state Pet Sprite Comparison View.
+Công cụ xem trước asset Pygame độc lập cho LittleLife.
+Kiểm tra, xem trước và xác thực toàn bộ asset của game trong assets_pack/.
+Có nền caro thể hiện vùng trong suốt, zoom theo tỉ lệ, điều hướng bằng phím mũi tên,
+và một chế độ So sánh Sprite Pet 5 trạng thái riêng.
 """
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import pygame
 
-# Configuration & Theme Colors (Cozy LittleLife palette)
+# Cấu hình & màu chủ đề (bảng màu Cozy LittleLife)
 WINDOW_WIDTH = 1000
 WINDOW_HEIGHT = 680
 FPS = 60
 TITLE = "LittleLife - Asset Previewer & Validator"
 
-COLOR_BG = (248, 245, 237)          # Warm cream
-COLOR_SIDEBAR_BG = (240, 234, 222)  # Soft sand
-COLOR_CARD_BG = (255, 255, 255)     # Clean white card
-COLOR_CARD_BORDER = (226, 218, 206) # Muted border
-COLOR_PRIMARY = (118, 171, 143)     # Sage green
+COLOR_BG = (248, 245, 237)          # Kem ấm
+COLOR_SIDEBAR_BG = (240, 234, 222)  # Cát nhạt
+COLOR_CARD_BG = (255, 255, 255)     # Thẻ trắng sạch
+COLOR_CARD_BORDER = (226, 218, 206) # Viền dịu
+COLOR_PRIMARY = (118, 171, 143)     # Xanh xô thơm
 COLOR_PRIMARY_DARK = (72, 120, 95)
-COLOR_ACCENT = (244, 162, 97)       # Coral orange
-COLOR_TEXT_DARK = (58, 54, 50)      # Charcoal
-COLOR_TEXT_MUTED = (130, 125, 118)  # Gentle stone grey
+COLOR_ACCENT = (244, 162, 97)       # Cam san hô
+COLOR_TEXT_DARK = (58, 54, 50)      # Xám than
+COLOR_TEXT_MUTED = (130, 125, 118)  # Xám đá nhẹ
 COLOR_TEXT_LIGHT = (255, 255, 255)
 COLOR_ERROR_BG = (254, 226, 226)
 COLOR_ERROR_BORDER = (239, 68, 68)
 COLOR_ERROR_TEXT = (185, 28, 28)
 
-# Supported categories mapped to relative directories under assets_pack
+# Các danh mục được hỗ trợ, ánh xạ tới thư mục tương đối trong assets_pack
 CATEGORY_DIRS = [
     ("icons/stats", "icons/stats", "Stats & Vitals"),
     ("icons/items", "icons/items", "Shop & Bag Items"),
@@ -41,7 +41,7 @@ SCALE_LEVELS = [1.0, 2.0, 3.0, 4.0, 6.0, 8.0]
 
 
 class AssetEntry:
-    """Represents an asset item with loaded Pygame surface or load error."""
+    """Đại diện một asset kèm surface Pygame đã tải hoặc lỗi khi tải."""
     def __init__(self, category: str, path: Path):
         self.category = category
         self.path = path
@@ -69,7 +69,7 @@ class AssetEntry:
 
 
 class AssetPreviewerApp:
-    """Central Asset Previewer application."""
+    """Ứng dụng Asset Previewer trung tâm."""
     def __init__(self, assets_dir: Path):
         pygame.init()
         pygame.display.set_caption(TITLE)
@@ -82,20 +82,20 @@ class AssetPreviewerApp:
         self.category_titles: Dict[str, str] = {cat[0]: cat[2] for cat in CATEGORY_DIRS}
         self.assets_by_category: Dict[str, List[AssetEntry]] = {cat: [] for cat in self.categories}
 
-        # App modes: "browse" or "comparison"
+        # Chế độ ứng dụng: "browse" hoặc "comparison"
         self.mode = "browse"
         self.current_category_idx = 0
         self.current_asset_idx = 0
-        self.scale_idx = 2  # default 3.0x zoom
+        self.scale_idx = 2  # mặc định zoom 3.0x
         self.show_grid = True
 
-        # Pre-generate checkerboard pattern surface
+        # Tạo sẵn surface họa tiết caro
         self._cached_checker: Optional[pygame.Surface] = None
 
         self._load_all_assets()
 
     def _load_all_assets(self):
-        """Scans assets_pack and loads all entries."""
+        """Quét assets_pack và tải toàn bộ mục."""
         for cat_key, sub_dir, _ in CATEGORY_DIRS:
             target_path = self.assets_dir / sub_dir
             if target_path.exists():
@@ -155,7 +155,7 @@ class AssetPreviewerApp:
         return rect
 
     def get_checkerboard(self, width: int, height: int, cell_size: int = 12) -> pygame.Surface:
-        """Draws a classic checkerboard pattern to reveal alpha transparency."""
+        """Vẽ họa tiết caro kinh điển để lộ vùng trong suốt alpha."""
         surf = pygame.Surface((width, height))
         c1 = (245, 245, 245)
         c2 = (220, 220, 220)
@@ -175,10 +175,10 @@ class AssetPreviewerApp:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                     return
-                # Tab or P to toggle Pet Comparison View
+                # Tab hoặc P để bật/tắt chế độ so sánh pet
                 elif event.key == pygame.K_TAB or event.key == pygame.K_p:
                     self.mode = "comparison" if self.mode == "browse" else "browse"
-                # Arrow navigation
+                # Điều hướng bằng phím mũi tên
                 elif event.key == pygame.K_RIGHT:
                     self.next_asset()
                 elif event.key == pygame.K_LEFT:
@@ -187,27 +187,27 @@ class AssetPreviewerApp:
                     self.next_category()
                 elif event.key == pygame.K_UP:
                     self.prev_category()
-                # Zoom controls: +/= and -
+                # Điều khiển zoom: +/= và -
                 elif event.key in (pygame.K_PLUS, pygame.K_EQUALS, pygame.K_KP_PLUS):
                     self.zoom_in()
                 elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
                     self.zoom_out()
-                # 1 - 4 number keys for quick category jump
+                # Phím số 1 - 4 để chuyển nhanh danh mục
                 elif event.key in (pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4):
                     idx = event.key - pygame.K_1
                     if idx < len(self.categories):
                         self.mode = "browse"
                         self.current_category_idx = idx
                         self.current_asset_idx = 0
-                # G to toggle grid/checkerboard
+                # G để bật/tắt lưới caro
                 elif event.key == pygame.K_g:
                     self.show_grid = not self.show_grid
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    # Mouse click on category tabs in sidebar
+                    # Nhấp chuột vào tab danh mục ở thanh bên
                     mx, my = event.pos
-                    # Sidebar category click check
+                    # Kiểm tra nhấp chuột vào danh mục ở thanh bên
                     for i in range(len(self.categories)):
                         tab_rect = pygame.Rect(20, 110 + i * 44, 240, 36)
                         if tab_rect.collidepoint((mx, my)):
@@ -215,12 +215,12 @@ class AssetPreviewerApp:
                             self.current_category_idx = i
                             self.current_asset_idx = 0
                             break
-                    # Comparison tab button
+                    # Nút tab so sánh
                     comp_rect = pygame.Rect(20, 110 + len(self.categories) * 44 + 10, 240, 36)
                     if comp_rect.collidepoint((mx, my)):
                         self.mode = "comparison"
 
-                    # Zoom in/out buttons
+                    # Nút zoom in/out
                     zoom_in_rect = pygame.Rect(910, 22, 34, 30)
                     zoom_out_rect = pygame.Rect(870, 22, 34, 30)
                     if zoom_in_rect.collidepoint((mx, my)):
@@ -229,17 +229,17 @@ class AssetPreviewerApp:
                         self.zoom_out()
 
     def render_sidebar(self):
-        # Sidebar background
+        # Nền thanh bên
         sidebar_rect = pygame.Rect(0, 0, 280, WINDOW_HEIGHT)
         pygame.draw.rect(self.screen, COLOR_SIDEBAR_BG, sidebar_rect)
         pygame.draw.line(self.screen, COLOR_CARD_BORDER, (280, 0), (280, WINDOW_HEIGHT), 1)
 
-        # Header Title
+        # Tiêu đề đầu trang
         self.draw_text("LittleLife", (25, 24), size=22, color=COLOR_PRIMARY_DARK, bold=True)
         self.draw_text("Asset Previewer", (25, 52), size=13, color=COLOR_TEXT_MUTED, bold=True)
         pygame.draw.line(self.screen, (225, 218, 206), (25, 80), (255, 80), 1)
 
-        # Category Tabs
+        # Các tab danh mục
         self.draw_text("CATEGORIES", (25, 92), size=11, color=COLOR_TEXT_MUTED, bold=True)
 
         for i, cat_key in enumerate(self.categories):
@@ -258,7 +258,7 @@ class AssetPreviewerApp:
             self.draw_text(f"{i + 1}. {title}", (tab_rect.x + 12, tab_rect.y + 9), size=13, color=text_col, bold=is_active)
             self.draw_text(f"({count})", (tab_rect.right - 12, tab_rect.y + 9), size=12, color=text_col, align="topright")
 
-        # Special Comparison View Tab
+        # Tab xem so sánh riêng
         comp_y = 110 + len(self.categories) * 44 + 10
         is_comp = (self.mode == "comparison")
         comp_rect = pygame.Rect(20, comp_y, 240, 36)
@@ -270,7 +270,7 @@ class AssetPreviewerApp:
             pygame.draw.rect(self.screen, COLOR_CARD_BORDER, comp_rect, width=1, border_radius=8)
         self.draw_text("🐾 Pet 5-State Comparison", (comp_rect.x + 12, comp_rect.y + 9), size=13, color=text_col, bold=is_comp)
 
-        # Asset count in category list
+        # Số lượng asset trong danh sách danh mục
         if self.mode == "browse":
             items = self.current_asset_list()
             self.draw_text("CATEGORY ITEMS", (25, comp_y + 60), size=11, color=COLOR_TEXT_MUTED, bold=True)
@@ -294,7 +294,7 @@ class AssetPreviewerApp:
                 self.draw_text(f"{prefix}{item.filename}", (row_rect.x + 4, row_rect.y + 4), size=11, color=row_col, bold=is_selected)
                 y_offset += 26
 
-        # Controls & Cheatsheet Box at bottom of sidebar
+        # Khung điều khiển & tóm tắt phím tắt ở cuối thanh bên
         help_box = pygame.Rect(20, WINDOW_HEIGHT - 120, 240, 105)
         pygame.draw.rect(self.screen, (246, 241, 233), help_box, border_radius=8)
         pygame.draw.rect(self.screen, (230, 222, 212), help_box, width=1, border_radius=8)
@@ -318,7 +318,7 @@ class AssetPreviewerApp:
         else:
             self.draw_text("Pet Sprites Comparison  •  5 States", (310, 24), size=18, color=COLOR_ACCENT, bold=True)
 
-        # Zoom Controls in top right
+        # Điều khiển zoom ở góc trên bên phải
         scale_val = self.current_scale()
         self.draw_text(f"Zoom: {int(scale_val)}x" if scale_val.is_integer() else f"Zoom: {scale_val}x", (810, 28), size=13, color=COLOR_TEXT_MUTED, bold=True)
 
@@ -333,7 +333,7 @@ class AssetPreviewerApp:
         asset = self.current_asset()
         main_area = pygame.Rect(310, 95, WINDOW_WIDTH - 340, WINDOW_HEIGHT - 120)
 
-        # Main Card Panel
+        # Khung thẻ chính
         pygame.draw.rect(self.screen, COLOR_CARD_BG, main_area, border_radius=12)
         pygame.draw.rect(self.screen, COLOR_CARD_BORDER, main_area, width=1, border_radius=12)
 
@@ -341,7 +341,7 @@ class AssetPreviewerApp:
             self.draw_text("No assets found in this category.", main_area.center, size=16, color=COLOR_TEXT_MUTED, align="center")
             return
 
-        # Handle Error State (Corrupt or missing image)
+        # Xử lý trạng thái lỗi (ảnh hỏng hoặc thiếu)
         if asset.error:
             err_box = pygame.Rect(main_area.x + 30, main_area.y + 30, main_area.width - 60, 100)
             pygame.draw.rect(self.screen, COLOR_ERROR_BG, err_box, border_radius=8)
@@ -350,14 +350,14 @@ class AssetPreviewerApp:
             self.draw_text(asset.error, (err_box.x + 16, err_box.y + 44), size=13, color=COLOR_ERROR_TEXT)
             return
 
-        # Viewport Display Area with Checkerboard pattern
+        # Vùng hiển thị viewport với họa tiết caro
         scale = self.current_scale()
         vp_width, vp_height = 400, 360
         vp_x = main_area.x + 30
         vp_y = main_area.y + 30
         vp_rect = pygame.Rect(vp_x, vp_y, vp_width, vp_height)
 
-        # Checkerboard background for alpha visualization
+        # Nền caro để thấy rõ kênh alpha
         if self.show_grid:
             checker = self.get_checkerboard(vp_width, vp_height, cell_size=16)
             self.screen.blit(checker, (vp_x, vp_y))
@@ -366,7 +366,7 @@ class AssetPreviewerApp:
 
         pygame.draw.rect(self.screen, (210, 204, 194), vp_rect, width=1, border_radius=4)
 
-        # Scale and blit image
+        # Phóng theo tỉ lệ rồi vẽ ảnh
         scaled_w = int(asset.width * scale)
         scaled_h = int(asset.height * scale)
         scaled_surf = pygame.transform.scale(asset.surface, (scaled_w, scaled_h))
@@ -375,14 +375,14 @@ class AssetPreviewerApp:
         img_rect.center = vp_rect.center
         self.screen.blit(scaled_surf, img_rect)
 
-        # Asset Metadata Panel (Right column of Card)
+        # Bảng thông tin asset (cột phải của thẻ)
         meta_x = vp_rect.right + 30
         meta_y = vp_rect.y
 
         self.draw_text(asset.filename, (meta_x, meta_y), size=20, color=COLOR_PRIMARY_DARK, bold=True)
         self.draw_text(f"Category: {asset.category}", (meta_x, meta_y + 34), size=13, color=COLOR_TEXT_MUTED)
 
-        # Info Badges
+        # Các nhãn thông tin
         specs = [
             ("Original Size", f"{asset.width} x {asset.height} px"),
             ("Preview Size", f"{scaled_w} x {scaled_h} px ({int(scale)}x)"),
@@ -401,7 +401,7 @@ class AssetPreviewerApp:
             self.draw_text(val, (spec_rect.x + 12, spec_rect.y + 22), size=13, color=COLOR_TEXT_DARK, bold=True)
             spec_y += 50
 
-        # Bottom Quick Thumbnail Carousel
+        # Dải thumbnail chuyển nhanh ở dưới
         items = self.current_asset_list()
         thumb_bar_y = main_area.bottom - 95
         pygame.draw.line(self.screen, (235, 230, 220), (main_area.x + 20, thumb_bar_y), (main_area.right - 20, thumb_bar_y), 1)
@@ -420,7 +420,7 @@ class AssetPreviewerApp:
             pygame.draw.rect(self.screen, border, t_box, width=2 if is_cur else 1, border_radius=6)
 
             if itm.surface:
-                # Scale thumbnail fitting into 36x36
+                # Phóng thumbnail cho vừa khung 36x36
                 fit_w = min(36, itm.width)
                 fit_h = min(36, itm.height)
                 t_surf = pygame.transform.smoothscale(itm.surface, (fit_w, fit_h))
@@ -433,7 +433,7 @@ class AssetPreviewerApp:
                 break
 
     def render_comparison_view(self):
-        """Dedicated side-by-side view for the 5 pet sprite states."""
+        """Chế độ xem riêng, đặt cạnh nhau 5 trạng thái sprite của pet."""
         main_area = pygame.Rect(310, 95, WINDOW_WIDTH - 340, WINDOW_HEIGHT - 120)
         pygame.draw.rect(self.screen, COLOR_CARD_BG, main_area, border_radius=12)
         pygame.draw.rect(self.screen, COLOR_CARD_BORDER, main_area, width=1, border_radius=12)
@@ -455,7 +455,7 @@ class AssetPreviewerApp:
         start_x = main_area.x + 22
         start_y = main_area.y + 80
 
-        scale = 1.5  # 64x64 scaled to 96x96
+        scale = 1.5  # 64x64 phóng thành 96x96
 
         for i, (state_key, filename, label, subtitle) in enumerate(pet_states):
             x = start_x + i * (card_w + gap)
@@ -464,18 +464,18 @@ class AssetPreviewerApp:
             pygame.draw.rect(self.screen, (252, 251, 248), card_rect, border_radius=10)
             pygame.draw.rect(self.screen, COLOR_CARD_BORDER, card_rect, width=1, border_radius=10)
 
-            # State Title Badge
+            # Nhãn tên trạng thái
             badge_rect = pygame.Rect(x + 8, start_y + 12, card_w - 16, 26)
             pygame.draw.rect(self.screen, (235, 243, 238), badge_rect, border_radius=6)
             self.draw_text(label, badge_rect.center, size=12, color=COLOR_PRIMARY_DARK, bold=True, align="center")
 
-            # Checkerboard display box for sprite
+            # Khung hiển thị caro cho sprite
             box_rect = pygame.Rect(x + 9, start_y + 48, 96, 120)
             checker = self.get_checkerboard(box_rect.width, box_rect.height, cell_size=12)
             self.screen.blit(checker, box_rect.topleft)
             pygame.draw.rect(self.screen, (215, 208, 198), box_rect, width=1, border_radius=4)
 
-            # Find matching pet asset
+            # Tìm asset pet tương ứng
             target_entry = next((e for e in self.assets_by_category.get("sprites/pet", []) if e.filename == filename), None)
             if target_entry and target_entry.surface:
                 s_surf = pygame.transform.smoothscale(target_entry.surface, (96, 96))
@@ -485,11 +485,11 @@ class AssetPreviewerApp:
             else:
                 self.draw_text("Missing", box_rect.center, size=12, color=COLOR_ERROR_TEXT, bold=True, align="center")
 
-            # State description notes
+            # Ghi chú mô tả trạng thái
             self.draw_text(filename, (x + 8, start_y + 180), size=11, color=COLOR_TEXT_MUTED, bold=True)
             self.draw_text(subtitle, (x + 8, start_y + 204), size=11, color=COLOR_TEXT_DARK)
 
-            # Status validation tag
+            # Nhãn xác thực trạng thái
             valid_rect = pygame.Rect(x + 8, card_rect.bottom - 36, card_w - 16, 24)
             if target_entry and not target_entry.error:
                 pygame.draw.rect(self.screen, (220, 245, 225), valid_rect, border_radius=4)
@@ -519,7 +519,7 @@ class AssetPreviewerApp:
 
 
 def main():
-    # Resolve assets_pack path relative to repository root
+    # Xác định đường dẫn assets_pack tương đối so với gốc repo
     base_dir = Path(__file__).resolve().parent.parent
     assets_dir = base_dir / "assets_pack"
 

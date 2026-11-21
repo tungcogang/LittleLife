@@ -62,6 +62,17 @@ class Item(Base):
     nullable=False
     )
 
+    # Hiệu ứng thứ hai tùy chọn cho item ảnh hưởng nhiều chỉ số (ví dụ Cozy Pillow).
+    secondary_effect_type: Mapped[str | None] = mapped_column(
+        String(30),
+        nullable=True
+    )
+
+    secondary_effect_value: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
+
     is_available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

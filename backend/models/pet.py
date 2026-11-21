@@ -1,5 +1,7 @@
+from datetime import date
 from typing import TYPE_CHECKING
 from sqlalchemy import (
+    Date,
     Integer,
     String,
     ForeignKey,
@@ -88,6 +90,13 @@ class Pet(Base):
         Integer,
         default=100,
         nullable=False
+    )
+
+    # Ngày gần nhất mà mức giảm Happiness/Health mỗi ngày đã được xử lý.
+    # NULL nghĩa là "chưa xử lý lần nào" (chỉ lấy mốc, không trừ chỉ số).
+    last_decay_date: Mapped[date | None] = mapped_column(
+        Date,
+        nullable=True
     )
 
     # Quan hệ với User

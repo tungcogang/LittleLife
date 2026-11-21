@@ -1,8 +1,8 @@
 """
-Pet Screen for LittleLife Pygame UI.
-Displays pet avatar, name, level, exp progress bar, stats (hunger, happiness, energy, health),
-and action buttons (Feed, Play, Sleep).
-Also supports in-game Pet Adoption/Creation when the user does not have a pet yet.
+Màn hình Pet cho LittleLife Pygame UI.
+Hiển thị avatar pet, tên, cấp độ, thanh tiến trình exp, các chỉ số (hunger, happiness, energy, health),
+và các nút hành động (Feed, Play, Sleep).
+Đồng thời hỗ trợ quy trình nhận nuôi/tạo Pet trong game khi người dùng chưa có pet.
 """
 import math
 import pygame
@@ -54,7 +54,7 @@ except ImportError:
 
 
 class PetScreen:
-    """The main Pet interaction screen with Pet Adoption flow."""
+    """Màn hình tương tác với Pet chính, bao gồm quy trình nhận nuôi Pet."""
     def __init__(
         self,
         on_feed: Callable[[], Tuple[bool, str]],
@@ -69,16 +69,16 @@ class PetScreen:
         self.on_create_pet = on_create_pet
         self.show_notification = show_notification
 
-        # Animation timer for cute pet idle bobbing
+        # Bộ đếm animation cho hiệu ứng pet nhấp nhô khi rảnh
         self.anim_time = 0.0
 
-        # Avatar & Profile Card
+        # Card avatar & hồ sơ
         self.avatar_card = Card((50, 90, 380, 480), title="Pet Profile", subtitle="Your faithful life companion")
 
-        # Status & Stats Card
+        # Card trạng thái & chỉ số
         self.stats_card = Card((460, 90, 450, 480), title="Vitals & Needs", subtitle="Keep stats high by completing daily goals")
 
-        # Action Buttons
+        # Các nút hành động
         btn_y = 500
         btn_width = 110
         btn_height = 44
@@ -109,7 +109,7 @@ class PetScreen:
             text_color=(30, 50, 70)
         )
 
-        # Pet Adoption Controls (when no pet exists)
+        # Điều khiển nhận nuôi Pet (khi chưa có pet)
         self.input_pet_name = TextInput(
             rect=(500, 260, 240, 40),
             placeholder="e.g. Mochi, Luna, Bao",
@@ -124,7 +124,7 @@ class PetScreen:
             font_size=14
         )
 
-        # Action lock to avoid spamming while an action is in progress
+        # Khóa hành động để tránh bấm liên tục khi một hành động đang xử lý
         self.action_in_progress = False
 
     def _handle_feed(self):
@@ -169,7 +169,7 @@ class PetScreen:
             success, msg = self.on_create_pet(name)
             self.show_notification(msg, "success" if success else "error")
             if success:
-                self.input_pet_name.text = ""
+                self.input_pet_name.clear()
         finally:
             self.action_in_progress = False
 
@@ -189,23 +189,23 @@ class PetScreen:
             self.input_pet_name.update(dt)
 
     def _draw_pet_avatar(self, surface: pygame.Surface, pet: Optional[PetState], center_x: int, center_y: int):
-        """Draws a cute, friendly procedural pet creature (no external image assets needed)."""
+        """Vẽ một chú pet dễ thương, thân thiện bằng hình học (không cần file ảnh bên ngoài)."""
         bob_offset = int(math.sin(self.anim_time) * 5)
         cy = center_y + bob_offset
 
-        # Soft shadow under pet
+        # Bóng đổ mềm phía dưới pet
         shadow_rect = pygame.Rect(0, 0, 140, 30)
         shadow_rect.center = (center_x, center_y + 80)
         pygame.draw.ellipse(surface, (230, 224, 215), shadow_rect)
 
-        # Pet body
+        # Thân pet
         body_color = (255, 213, 150)
         body_rect = pygame.Rect(0, 0, 150, 130)
         body_rect.center = (center_x, cy)
         pygame.draw.ellipse(surface, body_color, body_rect)
         pygame.draw.ellipse(surface, (235, 190, 130), body_rect, width=3)
 
-        # Cute Ears
+        # Tai dễ thương
         left_ear = [(center_x - 55, cy - 40), (center_x - 30, cy - 85), (center_x - 10, cy - 50)]
         right_ear = [(center_x + 10, cy - 50), (center_x + 30, cy - 85), (center_x + 55, cy - 40)]
         pygame.draw.polygon(surface, body_color, left_ear)
@@ -213,35 +213,35 @@ class PetScreen:
         pygame.draw.polygon(surface, (235, 190, 130), left_ear, width=3)
         pygame.draw.polygon(surface, (235, 190, 130), right_ear, width=3)
 
-        # Inner ears (soft pink)
+        # Tai trong (hồng nhạt)
         pygame.draw.polygon(surface, (255, 185, 185), [(center_x - 45, cy - 43), (center_x - 30, cy - 75), (center_x - 18, cy - 50)])
         pygame.draw.polygon(surface, (255, 185, 185), [(center_x + 18, cy - 50), (center_x + 30, cy - 75), (center_x + 45, cy - 43)])
 
-        # Cheeks (blush)
+        # Má (ửng hồng)
         pygame.draw.circle(surface, (255, 180, 170), (center_x - 42, cy + 12), 12)
         pygame.draw.circle(surface, (255, 180, 170), (center_x + 42, cy + 12), 12)
 
-        # Eyes & expressions
+        # Mắt & biểu cảm
         eye_y = cy - 2
         energy_val = pet.energy if pet else 100
         happiness_val = pet.happiness if pet else 100
 
         if energy_val < 20:
-            # Tired sleepy eyes (- -)
+            # Mắt buồn ngủ, mệt mỏi (- -)
             pygame.draw.line(surface, COLOR_TEXT_DARK, (center_x - 30, eye_y), (center_x - 12, eye_y), 3)
             pygame.draw.line(surface, COLOR_TEXT_DARK, (center_x + 12, eye_y), (center_x + 30, eye_y), 3)
         elif happiness_val >= 60:
-            # Joyful curved arc eyes (^ ^)
+            # Mắt cong vui vẻ (^ ^)
             pygame.draw.arc(surface, COLOR_TEXT_DARK, (center_x - 32, eye_y - 6, 20, 16), 0.2, 3.0, 3)
             pygame.draw.arc(surface, COLOR_TEXT_DARK, (center_x + 12, eye_y - 6, 20, 16), 0.2, 3.0, 3)
         else:
-            # Normal open eyes
+            # Mắt mở bình thường
             pygame.draw.circle(surface, COLOR_TEXT_DARK, (center_x - 22, eye_y), 6)
             pygame.draw.circle(surface, COLOR_TEXT_DARK, (center_x + 22, eye_y), 6)
             pygame.draw.circle(surface, (255, 255, 255), (center_x - 24, eye_y - 2), 2)
             pygame.draw.circle(surface, (255, 255, 255), (center_x + 20, eye_y - 2), 2)
 
-        # Tiny nose & mouth
+        # Mũi & miệng nhỏ xíu
         pygame.draw.polygon(surface, (210, 110, 90), [(center_x - 4, cy + 8), (center_x + 4, cy + 8), (center_x, cy + 13)])
         pygame.draw.arc(surface, COLOR_TEXT_DARK, (center_x - 10, cy + 10, 20, 12), 3.4, 6.0, 2)
 
@@ -251,11 +251,11 @@ class PetScreen:
         draw_text(surface, f"Mood: {mood}", (center_x, center_y + 115), font_size=15, color=COLOR_TEXT_MUTED, bold=True, align="center")
 
     def render(self, surface: pygame.Surface, pet: Optional[PetState]):
-        # 1. Render Left Column: Pet Profile
+        # 1. Render cột trái: hồ sơ Pet
         self.avatar_card.render(surface)
 
         if pet is None:
-            # No Pet Found State – Adopt Pet Interface
+            # Trạng thái chưa có pet – giao diện nhận nuôi Pet
             draw_text(surface, "Egg Incubator", (240, 155), font_size=24, color=COLOR_PRIMARY_DARK, bold=True, align="center")
             
             tag_rect = pygame.Rect(0, 0, 130, 26)
@@ -263,12 +263,12 @@ class PetScreen:
             pygame.draw.rect(surface, (244, 241, 235), tag_rect, border_radius=13)
             draw_text(surface, "Ready for Life", tag_rect.center, font_size=13, color=COLOR_TEXT_MUTED, bold=True, align="center")
 
-            # Draw cute procedural pet silhouette / awaiting adoption
+            # Vẽ hình bóng pet dễ thương / đang chờ nhận nuôi
             self._draw_pet_avatar(surface, None, 240, 310)
 
             draw_text(surface, "Adopt a loyal life companion to start!", (240, 495), font_size=13, color=COLOR_TEXT_MUTED, align="center")
 
-            # 2. Render Right Column: Pet Adoption Form Card
+            # 2. Render cột phải: card form nhận nuôi Pet
             self.stats_card.render(surface)
             draw_text(surface, "Welcome to LittleLife!", (685, 160), font_size=22, color=COLOR_PRIMARY_DARK, bold=True, align="center")
             draw_text(surface, "You don't have a pet yet. Choose a name to begin your journey.", (685, 195), font_size=13, color=COLOR_TEXT_MUTED, align="center")
@@ -277,36 +277,38 @@ class PetScreen:
             self.input_pet_name.render(surface)
             self.btn_create_pet.render(surface)
 
-            # Informative guide box
+            # Khung hướng dẫn thông tin
             info_box = pygame.Rect(500, 330, 375, 160)
             pygame.draw.rect(surface, (248, 245, 239), info_box, border_radius=8)
             pygame.draw.rect(surface, (235, 229, 220), info_box, width=1, border_radius=8)
             draw_text(surface, "🌟 Companion Benefits", (info_box.x + 16, info_box.y + 16), font_size=14, color=COLOR_PRIMARY_DARK, bold=True)
             guide_lines = [
-                "• Your pet gains +20 EXP with every completed habit.",
-                "• Feed (+30 Hunger), Play (+20 Joy), and Sleep (+30 Energy).",
-                "• Vitals and level stay synchronized with the FastAPI backend.",
+                "• +20 EXP for every completed habit.",
+                "• Feed +15 Hunger; Sleep +30 Energy, +5 Health.",
+                "• Play +15 Joy, costs 10 Hunger & Energy.",
+                "• Happiness -10 and Health -5 each new day.",
+                "• Vitals and level stay synced with the server.",
             ]
             gy = info_box.y + 45
             for gl in guide_lines:
                 draw_text(surface, gl, (info_box.x + 16, gy), font_size=12, color=COLOR_TEXT_DARK)
-                gy += 26
+                gy += 24
             return
 
-        # Pet Exists – Normal Pet Screen
+        # Đã có pet – màn hình Pet bình thường
         draw_text(surface, pet.pet_name, (240, 155), font_size=26, color=COLOR_PRIMARY_DARK, bold=True, align="center")
         
-        # Level Badge
+        # Huy hiệu cấp độ
         lvl_rect = pygame.Rect(0, 0, 90, 26)
         lvl_rect.center = (240, 190)
         pygame.draw.rect(surface, (235, 243, 238), lvl_rect, border_radius=13)
         pygame.draw.rect(surface, COLOR_PRIMARY, lvl_rect, width=1, border_radius=13)
         draw_text(surface, f"Level {pet.level}", lvl_rect.center, font_size=14, color=COLOR_PRIMARY_DARK, bold=True, align="center")
 
-        # Procedural cute pet
+        # Vẽ pet dễ thương bằng hình học
         self._draw_pet_avatar(surface, pet, 240, 310)
 
-        # EXP Progress bar inside Avatar Card
+        # Thanh tiến trình EXP trong card avatar
         draw_text(surface, f"EXP: {pet.exp} / {pet.exp_to_next_level}", (80, 480), font_size=13, color=COLOR_TEXT_MUTED, bold=True)
         exp_bar = ProgressBar(
             rect=(80, 502, 320, 14),
@@ -317,10 +319,10 @@ class PetScreen:
         )
         exp_bar.render(surface)
 
-        # 2. Render Right Column: Vitals Card
+        # 2. Render cột phải: card chỉ số
         self.stats_card.render(surface)
 
-        # 4 Progress Bars for Vitals
+        # 4 thanh tiến trình cho các chỉ số
         stat_x = 490
         stat_w = 390
         bar_h = 18
@@ -343,10 +345,10 @@ class PetScreen:
             )
             pbar.render(surface)
 
-        # Divider line before buttons
+        # Đường phân cách trước các nút
         pygame.draw.line(surface, (235, 230, 220), (480, 475), (890, 475), 1)
 
-        # Action Buttons
+        # Các nút hành động
         self.btn_feed.render(surface)
         self.btn_play.render(surface)
         self.btn_sleep.render(surface)

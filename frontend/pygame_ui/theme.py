@@ -1,46 +1,46 @@
 """
-Theme configuration for LittleLife Pygame UI.
-Contains cozy color palette, font configurations, and dimension constants.
+Cấu hình theme cho LittleLife Pygame UI.
+Bao gồm bảng màu dễ chịu, cấu hình font và các hằng số kích thước.
 """
 import pygame
 
-# Window settings
+# Cấu hình cửa sổ
 WINDOW_WIDTH = 960
 WINDOW_HEIGHT = 640
 FPS = 60
 TITLE = "LittleLife - Cozy Virtual Pet & Daily Habit Companion"
 
-# Cozy Pastel & Warm Earth Color Palette
-COLOR_BG = (248, 245, 237)          # Warm cream
-COLOR_CARD_BG = (255, 255, 255)     # Clean white card
-COLOR_CARD_BORDER = (230, 222, 210) # Soft sand border
-COLOR_NAV_BG = (238, 230, 217)      # Navigation bar background
+# Bảng màu pastel & đất ấm dễ chịu
+COLOR_BG = (248, 245, 237)          # Kem ấm
+COLOR_CARD_BG = (255, 255, 255)     # Card trắng sạch
+COLOR_CARD_BORDER = (230, 222, 210) # Viền cát dịu
+COLOR_NAV_BG = (238, 230, 217)      # Nền thanh điều hướng
 
-# Primary & Accent colors
-COLOR_PRIMARY = (118, 171, 143)     # Sage green (friendly & soothing)
+# Màu chính & màu nhấn
+COLOR_PRIMARY = (118, 171, 143)     # Xanh xô thơm (thân thiện & dịu mắt)
 COLOR_PRIMARY_HOVER = (98, 151, 123)
 COLOR_PRIMARY_DARK = (72, 120, 95)
 
-COLOR_ACCENT = (244, 162, 97)       # Warm coral / pastel orange
+COLOR_ACCENT = (244, 162, 97)       # San hô ấm / cam pastel
 COLOR_ACCENT_HOVER = (231, 142, 75)
 
-COLOR_COIN = (234, 179, 8)          # Golden amber
-COLOR_COIN_BG = (254, 243, 199)     # Soft amber pill background
+COLOR_COIN = (234, 179, 8)          # Hổ phách vàng
+COLOR_COIN_BG = (254, 243, 199)     # Nền viên hổ phách dịu
 COLOR_COIN_BORDER = (252, 211, 77)
 
-# Status bar colors
-COLOR_HUNGER = (240, 140, 110)      # Salmon peach
-COLOR_HAPPINESS = (250, 190, 88)    # Sunny yellow
-COLOR_ENERGY = (130, 195, 236)      # Sky blue
-COLOR_HEALTH = (120, 205, 140)      # Fresh mint green
-COLOR_EXP = (175, 145, 225)         # Gentle lavender
+# Màu thanh trạng thái
+COLOR_HUNGER = (240, 140, 110)      # Hồng đào
+COLOR_HAPPINESS = (250, 190, 88)    # Vàng nắng
+COLOR_ENERGY = (130, 195, 236)      # Xanh da trời
+COLOR_HEALTH = (120, 205, 140)      # Xanh bạc hà tươi
+COLOR_EXP = (175, 145, 225)         # Oải hương dịu
 
-# Text colors
-COLOR_TEXT_DARK = (58, 54, 50)      # Charcoal warm brown (high readability)
-COLOR_TEXT_MUTED = (130, 125, 118)  # Gentle stone grey
-COLOR_TEXT_LIGHT = (255, 255, 255)  # White text
+# Màu chữ
+COLOR_TEXT_DARK = (58, 54, 50)      # Nâu than ấm (dễ đọc)
+COLOR_TEXT_MUTED = (130, 125, 118)  # Xám đá dịu
+COLOR_TEXT_LIGHT = (255, 255, 255)  # Chữ trắng
 
-# State colors
+# Màu trạng thái
 COLOR_SUCCESS = (118, 171, 143)
 COLOR_DANGER = (225, 112, 105)
 COLOR_DISABLED = (205, 200, 195)
@@ -49,13 +49,13 @@ COLOR_DISABLED_TEXT = (150, 145, 140)
 _fonts = {}
 
 def get_font(size: int = 18, bold: bool = False) -> pygame.font.Font:
-    """Helper to lazily load and cache system fonts."""
+    """Hàm phụ nạp muộn và cache font hệ thống."""
     if not pygame.font.get_init():
         pygame.font.init()
     
     key = (size, bold)
     if key not in _fonts:
-        # Try finding a friendly rounded font like Segoe UI, Arial, or fallback to SysFont
+        # Thử tìm font bo tròn thân thiện như Segoe UI, Arial; nếu không có thì dùng SysFont
         font_names = ["segoeui", "helvetica", "arial", "dejavusans"]
         matched_font = None
         for name in font_names:

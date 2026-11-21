@@ -1,5 +1,5 @@
 """
-LittleLife Pygame UI Package.
+Package UI Pygame của LittleLife.
 """
 from .app import LittleLifeApp, main
 

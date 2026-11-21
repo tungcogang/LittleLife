@@ -1,4 +1,4 @@
-# Environment
+# Môi trường
 .venv/
 venv/
 .env
@@ -10,7 +10,7 @@ __pycache__/
 *.py[cod]
 *.pyo
 
-# Database
+# Cơ sở dữ liệu
 *.db
 *.sqlite
 *.sqlite3
@@ -22,3 +22,7 @@ __pycache__/
 # Build
 build/
 dist/
+
+# Sản phẩm test / sandbox cục bộ
+.dsh-acl-recovery/
+test/screenshots/

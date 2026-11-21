@@ -1,3 +1,4 @@
+from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -7,6 +8,7 @@ from backend.database import get_db
 from backend.models.pet import Pet
 from backend.models.user import User
 from backend.services.auth_dependency import get_current_user
+from backend.services.pet_service import apply_daily_decay, pet_snapshot
 
 router = APIRouter(prefix="/pets", tags=["Pet"])
 
@@ -40,33 +42,27 @@ def create_pet(
             detail="Pet name cannot be empty"
         )
 
-    # Tạo Pet mới
+    # Pet mới bắt đầu với chỉ số "vừa nhận nuôi" giống Offline Demo
+    # Mode (75/80/60/95) để mọi item trong Store đều có tác dụng rõ ràng.
     pet = Pet(
         user_id=current_user.id,
         pet_name=pet_name,
         level=1,
         exp=0,
-        hunger=100,
-        happiness=100,
-        energy=100,
-        health=100
+        hunger=75,
+        happiness=80,
+        energy=60,
+        health=95,
+        last_decay_date=date.today()
     )
 
     db.add(pet)
     db.commit()
     db.refresh(pet)
 
-    return {
-        "message": "Pet created successfully",
-        "id": pet.id,
-        "pet_name": pet.pet_name,
-        "level": pet.level,
-        "exp": pet.exp,
-        "hunger": pet.hunger,
-        "happiness": pet.happiness,
-        "energy": pet.energy,
-        "health": pet.health
-    }
+    response = pet_snapshot(pet)
+    response["message"] = "Pet created successfully"
+    return response
 
 
 @router.get("/me")
@@ -84,13 +80,9 @@ def get_my_pet(
             detail="Pet not found"
         )
 
-    return {
-        "id": pet.id,
-        "pet_name": pet.pet_name,
-        "level": pet.level,
-        "exp": pet.exp,
-        "hunger": pet.hunger,
-        "happiness": pet.happiness,
-        "energy": pet.energy,
-        "health": pet.health
-    }
+    # Request pet đầu tiên của một ngày mới sẽ áp dụng mức giảm Happiness/Health một lần.
+    apply_daily_decay(db, pet)
+    db.commit()
+    db.refresh(pet)
+
+    return pet_snapshot(pet)

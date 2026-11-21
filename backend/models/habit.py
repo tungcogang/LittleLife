@@ -60,7 +60,7 @@ class Habit(Base):
         back_populates="habits"
     )
 
-    # Quan hệ với HabitCompletion
+    # Quan hệ tới HabitCompletion
     completions: Mapped[list["HabitCompletion"]] = relationship(
         back_populates="habit",
         cascade="all, delete-orphan"

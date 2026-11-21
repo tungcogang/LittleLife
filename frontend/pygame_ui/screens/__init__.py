@@ -1,5 +1,5 @@
 """
-Screens package for LittleLife Pygame UI prototype.
+Package các màn hình cho prototype UI Pygame của LittleLife.
 """
 try:
     from .pet_screen import PetScreen

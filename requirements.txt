@@ -1,0 +1,10 @@
+# Các phụ thuộc trực tiếp của LittleLife (Python 3.13)
+fastapi==0.162.7
+uvicorn==0.54.0
+SQLAlchemy==2.1.9
+PyMySQL==1.2.4
+pydantic==2.14.3
+PyJWT==2.15.1
+python-dotenv==1.2.4
+pwdlib[argon2]==0.4.2
+pygame==2.6.1

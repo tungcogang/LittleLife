@@ -14,7 +14,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 
-# Tạo đường dẫn kết nối
+# Tạo URL kết nối
 from sqlalchemy import URL
 
 DATABASE_URL = URL.create(
@@ -27,13 +27,13 @@ DATABASE_URL = URL.create(
 )
 
 
-# Tạo Engine
+# Tạo engine
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True
 )
 
-# Tạo Session
+# Tạo session
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
